@@ -1,0 +1,84 @@
+#kill sudoku cells are represented as objects so that they can have their contents ascocited with them easily
+class cellClass:
+    
+    def __init__(self, cellCount):
+        self.cellCount = cellCount
+        self.allNumbers = []
+        self.rejectedNumbers = []
+        self.usedNumbers = []
+
+#for an integer and a list of cells, checks if there are any combinations which could sum to the target number 
+#takes an intger, a target number, and a list of cells. 
+#returns a boolean value
+def useTest(element, target, cellList):    
+    combinations = list(product(*cellList))
+    
+    for combo in combinations:
+        count = element       
+        for i in combo:
+            count += i
+        
+        if count == target:
+            return(True)   
+    
+    return(False)
+
+#takes a target number and a list of cells with possible numbers 
+#prints a list of the cells and which numbers can and cant be summed to make the target
+#cellList can be a list from a function or entered directly as a list of lists of integers eg [[a, b], [a, c], [b, c, d]]
+
+def getUnusedDigits(target, cellList):
+    cellCount = 0
+    cells = []
+    for cell in cellList:        
+        
+        cellCount += 1
+        cellList.remove(cell)
+        
+        for element in cell:
+            
+            if useTest(element, target, cellList) == False:
+                
+                exists = False
+                
+                for i in cells:
+                    if i.cellCount == cellCount:
+                        i.rejectedNumbers.append(element)
+                        i.allNumbers.append(element)
+                        exists = True
+                
+                if exists == False:
+                    item = cellClass(cellCount)
+                    cells.append(item)
+                    item.rejectedNumbers.append(element)
+                    item.allNumbers.append(element)
+            
+            if useTest(element, target, cellList) == True:
+                
+                exists = False
+                
+                for i in cells:
+                    if i.cellCount == cellCount:
+                        i.usedNumbers.append(element)
+                        i.allNumbers.append(element)
+                        exists = True
+                
+                if exists == False:
+                    item = cellClass(cellCount)
+                    cells.append(item)
+                    item.usedNumbers.append(element)
+                    item.allNumbers.append(element)
+                        
+            
+        cellList.insert(cellCount-1, cell)
+    
+    
+    print("Target = " + str(target))
+    
+    text = """Cell {}
+        Contents: {}
+        Usable: {}
+        Unusable: {}"""
+    
+    for cell in cells:      
+        print(text.format(cell.cellCount, cell.allNumbers, cell.usedNumbers, cell.rejectedNumbers))
